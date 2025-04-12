@@ -1,49 +1,13 @@
 #include <cstdlib>
 #include <iostream>
-#include <map>
 #include <stdexcept>
 #include <system_error>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <netdb.h>
-
-std::string getMyIP() {
-    char hostname[256];
-    if(gethostname(hostname, sizeof(hostname)) == 0) {
-        struct hostent* host = gethostbyname(hostname);
-        if(host && host->h_addr_list[0]) {
-            return inet_ntoa(*(struct in_addr*)host->h_addr_list[0]);
-        }
-    }
-    return "Unknown";
-}
-
-void parseOptions(int argc, char* argv[], std::map<std::string, std::string>& options) {
-    for (int i = 2; i < argc; i++) {
-        std::string arg = argv[i];
-
-        if(arg.find("--") == 0) {
-            size_t equalPos = arg.find("=");
-            if(equalPos == std::string::npos) {
-                std::cerr << "Invlid option format : " << arg << std::endl;
-                exit(EXIT_FAILURE);
-            }
-
-            std::string option = arg.substr(2, equalPos - 2);
-            std::string value = arg.substr(equalPos + 1);
-
-            options[option] = value;
-        }
-    }
-}
-
-void printOption(const std::map<std::string,std::string>& options) {
-    for(const auto& pair : options) {
-        std::cout << pair.first << ": " << pair.second << std::endl;
-    }
-}
+#include "include/utils/ip_util.h"
+#include "include/utils/options.h"
 
 int main(int argc, char* argv[]) {
     if(argc < 3) {
@@ -64,10 +28,10 @@ int main(int argc, char* argv[]) {
 
     std::map<std::string, std::string> options;
     parseOptions(argc, argv, options);
-    printOption(options);
+    printOptions(options);
 
     std::cout << "Starting server of type [" << serverType << "] on port [" << port << "]" << std::endl;
-    std::cout << getMyIP() << std::endl;
+    std::cout << getIP() << std::endl;
     
     if (options.find("max-client") != options.end()) {
         int maxClient = std::stoi(options["max-client"]);

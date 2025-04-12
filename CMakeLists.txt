@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SOURCES
     src/main.cpp
+    src/include/utils/ip_util.cpp
+    src/include/utils/options.cpp
 )
 
 add_executable(easily-open-server ${SOURCES})
