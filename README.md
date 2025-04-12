@@ -17,7 +17,7 @@ A simple command-line program for opening any type of server.
 |--------|--------|--------|--------|
 | --max-client=n   | Integer | Maximum number of clients that can connect to the server | --max-client=10
 | --buffer-size=n  | Integer | Buffer size for receiving messages (in bytes)            | --buffer-size=2048
-| --max-req-size=  | Integer | (HTTP) Maximum allowed size of a request (in bytes)	    | --max-req-size=8192
+| --max-req-size=n  | Integer | (HTTP) Maximum allowed size of a request (in bytes)	    | --max-req-size=8192
 | --log=true/false | Boolean | Enable or disable server-side logging	                | --log=true
 | --timeout=n      | Integer | Timeout for inactive connections (in seconds)	        | --timeout=60
 
