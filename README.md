@@ -11,7 +11,8 @@ A simple command-line program for opening any type of server.
 
 ## command
 <b>open [server-type] [port] [options]</b>
-* Available Options<br>
+
+## Available Options<br>
 
 | Option | Type | Description | Example |
 |--------|--------|--------|--------|
