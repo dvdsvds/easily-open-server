@@ -5,5 +5,4 @@
 *.exe
 *.swp
 
-/test
-client
+/test/client
