@@ -9,7 +9,6 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
-
 std::string getMyIP() {
     char hostname[256];
     if(gethostname(hostname, sizeof(hostname)) == 0) {
@@ -20,6 +19,7 @@ std::string getMyIP() {
     }
     return "Unknown";
 }
+
 void parseOptions(int argc, char* argv[], std::map<std::string, std::string>& options) {
     for (int i = 2; i < argc; i++) {
         std::string arg = argv[i];
