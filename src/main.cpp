@@ -8,10 +8,11 @@
 #include <arpa/inet.h>
 #include "include/utils/ip_util.h"
 #include "include/utils/options.h"
+#include "include/server/start_server.h"
 
 int main(int argc, char* argv[]) {
     if(argc < 3) {
-        std::cerr << "Usage : " << argv[0] << " [port] [server-type] [options]" << std::endl;
+        std::cerr << "Usage : " << argv[0] << " [server-type] [port] [options]" << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -41,40 +42,15 @@ int main(int argc, char* argv[]) {
         int bufferSize = std::stoi(options["buffer-size"]);
     }
 
-    int serverSockfd, clientSockfd;
-    struct sockaddr_in serverAddr, clientAddr;
-
-    serverSockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if(serverSockfd == -1) {
-        std::cerr << "socket creation failed : " << std::system_error(errno, std::generic_category()).what() << std::endl;
-        exit(EXIT_FAILURE);
+    if(serverType == "oto") {
+        startServer(port, options, "oto");
+    }
+    else if(serverType == "mor") {
+        startServer(port, options, "mor");
+    }
+    else if(serverType == "mr") {
+        startServer(port, options, "mr");
     }
 
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(port);
-
-    if(bind(serverSockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
-        std::cerr << "socket binding failed : " << std::system_error(errno, std::generic_category()).what() << std::endl;
-        close(serverSockfd);
-        exit(EXIT_FAILURE);
-    }
-
-    if(listen(serverSockfd, 5) == -1) {
-        std::cerr << "listening failed : " << std::system_error(errno, std::generic_category()).what() << std::endl;
-        close(serverSockfd);
-        exit(EXIT_FAILURE);
-    }
-
-    socklen_t clientlen = sizeof(clientAddr);
-    if(accept(serverSockfd, (struct sockaddr*)&clientAddr, &clientlen) == -1) {
-        std::cerr << "accept failed : " << std::system_error(errno, std::generic_category()).what() << std::endl;
-        close(serverSockfd);
-        exit(EXIT_FAILURE);
-    }
-
-    std::cout << "Client connected" << std::endl;
-
-    close(serverSockfd);
     return 0;
 } 

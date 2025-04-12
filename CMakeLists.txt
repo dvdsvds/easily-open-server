@@ -9,6 +9,8 @@ set(SOURCES
     src/main.cpp
     src/include/utils/ip_util.cpp
     src/include/utils/options.cpp
+    src/include/server/start_server.cpp
+    src/include/server/oto.cpp
 )
 
 add_executable(easily-open-server ${SOURCES})
