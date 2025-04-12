@@ -11,7 +11,8 @@ A simple command-line program for opening any type of server.
 
 ## command
 <b>open [server-type] [port] [options]</b>
-* Available Options
+* Available Options<br>
+
 | Option | Type | Description | Example |
 |--------|--------|--------|--------|
 | --max-client=n   | Integer | Maximum number of clients that can connect to the server | --max-client=10
