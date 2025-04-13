@@ -8,7 +8,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-void startServer(int port, const std::map<std::string, std::string>& options, const std::string& serverType) {
+void startServer(const ServerOptions& options) {
     int serverSockfd;
     struct sockaddr_in serverAddr, clientAddr;
 
@@ -20,7 +20,7 @@ void startServer(int port, const std::map<std::string, std::string>& options, co
 
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(port);
+    serverAddr.sin_port = htons(options.port);
 
     if(bind(serverSockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
         std::cerr << "socket binding failed : " << std::system_error(errno, std::generic_category()).what() << std::endl;
@@ -36,15 +36,15 @@ void startServer(int port, const std::map<std::string, std::string>& options, co
 
     socklen_t clientlen;
 
-    if(serverType == "oto") {
+    if(options.serverType == "oto") {
         std::cout << "oto server" << std::endl;
         clientlen = sizeof(clientAddr);
         otoServer(serverSockfd, clientAddr, clientlen);
     }
-    else if(serverType == "mor") {
+    else if(options.serverType == "mor") {
         std::cout << "multi one room server" << std::endl;
     }
-    else if(serverType == "mr") {
+    else if(options.serverType == "mr") {
         std::cout << "multi room server" << std::endl;
     }
 

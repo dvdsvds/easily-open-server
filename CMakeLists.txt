@@ -13,5 +13,10 @@ set(SOURCES
     src/include/server/oto.cpp
 )
 
-add_executable(easily-open-server ${SOURCES})
+find_package(CURL REQUIRED)
+
+add_executable(open ${SOURCES})
+
+
+target_link_libraries(open CURL::libcurl)
 
