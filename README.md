@@ -1,3 +1,5 @@
+# ! A project under development
+
 # easily-open-server
 
 A simple command-line program for opening any type of server.
