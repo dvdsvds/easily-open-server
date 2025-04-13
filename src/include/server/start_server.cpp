@@ -9,7 +9,7 @@
 #include <arpa/inet.h>
 
 void startServer(int port, const std::map<std::string, std::string>& options, const std::string& serverType) {
-    int serverSockfd, clientSockfd;
+    int serverSockfd;
     struct sockaddr_in serverAddr, clientAddr;
 
     serverSockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -39,7 +39,7 @@ void startServer(int port, const std::map<std::string, std::string>& options, co
     if(serverType == "oto") {
         std::cout << "oto server" << std::endl;
         clientlen = sizeof(clientAddr);
-        otoServer(serverSockfd, clientSockfd, clientAddr, clientlen);
+        otoServer(serverSockfd, clientAddr, clientlen);
     }
     else if(serverType == "mor") {
         std::cout << "multi one room server" << std::endl;
@@ -50,6 +50,5 @@ void startServer(int port, const std::map<std::string, std::string>& options, co
 
     std::cout << "Client connected" << std::endl;
 
-    close(clientSockfd);
     close(serverSockfd);
 }
