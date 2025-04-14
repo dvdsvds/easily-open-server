@@ -4,6 +4,7 @@ project(EOS VERSION 0.1)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_BUILD_TYPE Debug)
 
 set(SOURCES
     src/main.cpp
