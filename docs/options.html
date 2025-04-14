@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>easily-open-server - Server Options</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1e1e1e;
+      color: #f5f5f5;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+
+    h1, h2, h3 {
+      color: #ffffff;
+    }
+
+    pre {
+      background: #2d2d2d;
+      color: #dcdcdc;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+
+    code {
+      font-family: monospace;
+      background-color: #333;
+      color: #9cdcfe;
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+    }
+
+    .option-detail {
+      margin-bottom: 2rem;
+    }
+
+    a {
+      color: #569cd6;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Options</h1>
+
+  <h2>Option Details</h2>
+
+  <div class="option-detail">
+    <h3>serverType</h3>
+    <p>
+      <strong>Type:</strong> String<br/>
+      <strong>Default:</strong> <code>ctc</code><br/>
+      Specifies the type of server to launch. Example values include and <code>ctc</code>. The server behavior is determined by this value.
+    </p>
+  </div>
+
+  <div class="option-detail">
+    <h3>max-client</h3>
+    <p>
+      <strong>Type:</strong> Integer<br/>
+      <strong>Default:</strong> <code>2</code><br/>
+      Sets the maximum number of clients that can connect to the server at the same time. For <code>ctc</code> type, this is always fixed to 2.
+    </p>
+  </div>
+
+  <div class="option-detail">
+    <h3>buffer-size</h3>
+    <p>
+      <strong>Type:</strong> Integer<br/>
+      <strong>Default:</strong> <code>1024</code><br/>
+      Specifies the size in bytes of the buffer used to receive messages from clients. A larger buffer can improve performance for large data transfers.
+    </p>
+  </div>
+
+  <div class="option-detail">
+    <h3>max-req-size</h3>
+    <p>
+      <strong>Type:</strong> Integer<br/>
+      <strong>Default:</strong> <code>8192</code><br/>
+      For HTTP servers, this defines the maximum size in bytes of a single request. Requests larger than this limit will be rejected.
+    </p>
+  </div>
+
+  <div class="option-detail">
+    <h3>log</h3>
+    <p>
+      <strong>Type:</strong> Boolean<br/>
+      <strong>Default:</strong> <code>false</code><br/>
+      Enables or disables server logging. When enabled, the server logs connection events, errors, and internal activity to the console or a log file.
+    </p>
+  </div>
+
+  <div class="option-detail">
+    <h3>timeout</h3>
+    <p>
+      <strong>Type:</strong> Integer<br/>
+      <strong>Default:</strong> <code>60</code><br/>
+      Sets the inactivity timeout in seconds. If a client does not send any data for this period, the server will disconnect it.
+    </p>
+  </div>
+
+  <h2>Example Usage</h2>
+  <pre><code>./open http 8080 --max-client=10 --buffer-size=2048 --timeout=30</code></pre>
+
+</body>
+</html>
