@@ -26,7 +26,7 @@ A simple command-line program for opening any type of server.
 
 ## Options
  - Server performance varies depending on the configured option values
- - [Option Guide](https://dvdsvds.github.io/easily-open-server/options.html))
+ - [Option Guide](https://dvdsvds.github.io/easily-open-server/options.html)
 
 ## Server Type
 - All server types are specified using abbreviations<br>
