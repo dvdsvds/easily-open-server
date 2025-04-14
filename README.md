@@ -31,7 +31,7 @@ A simple command-line program for opening any type of server.
 ## Server Type
 - All server types are specified using abbreviations<br>
 - All server settings are reset when the server shuts down<br>
-- [Server Type Guide](./docs/server_type.html)
+- [Server Type Guide](https://dvdsvds.github.io/easily-open-server/server_type.html)
 
 
 
