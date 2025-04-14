@@ -5,23 +5,34 @@
 A simple command-line program for opening any type of server.
 
 ## Features
-
 - Launch different types of servers from a single CLI command
-- Easy-to-use syntax: `./open [server-type] [port] [options...]`
+- Easy-to-use syntax
+  - **Linux**
+    ```bash
+    git clone https://github.com/dvdsvds/easily-open-server.git
+    cd easily-open-server
+    mkdir build
+    cmake . && make
+    ./open
+  - **Windows**
+    - Using open.exe
+      Simply double-click open.exe to launch the server with default settings or configuration file.
+    - Using Command Line(CMD or PowerShell)
+      ```PowerShell
+      .\open
+     
 - Customizable options like max clients, buffer size, and timeout
 - Modular design for adding new server types
 
-## command
-<b>open [server-type] [port] [options]</b>
+## Options
+ - Server performance varies depending on the configured option values
+ - [Option Guide](./docs/options.html)
 
-## Available Options<br>
+## Server Type
+- All server types are specified using abbreviations<br>
+- All server settings are reset when the server shuts down<br>
+- [Server Type Guide](./docs/server_type.html)
 
-| Option | Type | Description | Example |
-|--------|--------|--------|--------|
-| --max-client=n   | Integer | Maximum number of clients that can connect to the server | --max-client=10
-| --buffer-size=n  | Integer | Buffer size for receiving messages (in bytes)            | --buffer-size=2048
-| --max-req-size=n  | Integer | (HTTP) Maximum allowed size of a request (in bytes)	    | --max-req-size=8192
-| --log=true/false | Boolean | Enable or disable server-side logging	                | --log=true
-| --timeout=n      | Integer | Timeout for inactive connections (in seconds)	        | --timeout=60
+
 
 
