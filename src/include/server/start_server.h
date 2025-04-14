@@ -4,6 +4,6 @@
 #include "../utils/options.h"
 #include <iostream>
 
-
 void startServer(const ServerOptions& options);
+
 #endif

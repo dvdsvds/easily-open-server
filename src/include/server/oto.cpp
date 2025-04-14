@@ -1,10 +1,11 @@
 #include "oto.h"
 #include <thread>
 
-#define BUFFER_SIZE 1024
-
 std::vector<int> clients;
 std::mutex clientMutex;
+
+
+ServerOptions options;
 
 void forwardMessage(const std::vector<int>& clients, const std::string& message, int senderSockfd) {
     for (int clientSockfd : clients) {
@@ -15,8 +16,8 @@ void forwardMessage(const std::vector<int>& clients, const std::string& message,
 }
 
 
-void handleRecv(int clientSockfd, std::vector<int>& clients) {
-    char buffer[BUFFER_SIZE];
+void handleRecv(int clientSockfd, std::vector<int>& clients, const ServerOptions& options) {
+    char buffer[options.bufferSize];
     while(true) {
         memset(buffer, 0, sizeof(buffer));
         ssize_t bytesRead = recv(clientSockfd, buffer, sizeof(buffer) - 1, 0);
@@ -51,7 +52,8 @@ void handleRecv(int clientSockfd, std::vector<int>& clients) {
     close(clientSockfd);
 }
 
-void otoServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t clientlen) {
+void otoServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t clientlen, const ServerOptions& options) {
+    std::cout << "servertype : " << options.serverType <<std::endl;
     char clientIP[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
     
@@ -60,7 +62,7 @@ void otoServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t client
     int clientCount = 0;
 
     while(true) {
-        if(clientCount < 2) {
+        if(clientCount < options.maxClient) {
             int clientSockfd = accept(serverSockfd, (struct sockaddr*)&clientAddr, &clientlen);
             if(clientSockfd == -1) {
                 std::cerr << "Accept failed : " << std::system_error(errno, std::generic_category()).what() << std::endl;
@@ -80,8 +82,8 @@ void otoServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t client
             if(clients.size() == 2) {
                 std::cout << "2 clients connected." << std::endl;
 
-                std::thread c1(handleRecv, clients[0], std::ref(clients));
-                std::thread c2(handleRecv, clients[1], std::ref(clients));
+                std::thread c1(handleRecv, clients[0], std::ref(clients), std::ref(options));
+                std::thread c2(handleRecv, clients[1], std::ref(clients), std::ref(options));
                 c1.detach();
                 c2.detach();
             }
