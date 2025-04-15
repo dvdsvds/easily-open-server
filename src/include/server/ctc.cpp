@@ -1,4 +1,4 @@
-#include "oto.h"
+#include "ctc.h"
 #include <thread>
 
 std::vector<int> clients;
@@ -52,7 +52,7 @@ void handleRecv(int clientSockfd, std::vector<int>& clients, const ServerOptions
     close(clientSockfd);
 }
 
-void otoServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t clientlen, const ServerOptions& options) {
+void ctcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t clientlen, const ServerOptions& options) {
     std::cout << "servertype : " << options.serverType <<std::endl;
     char clientIP[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);

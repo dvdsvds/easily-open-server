@@ -1,5 +1,5 @@
 #include "start_server.h"
-#include "oto.h"
+#include "ctc.h"
 #include <cstdlib>
 #include <iostream>
 #include <system_error>
@@ -39,7 +39,7 @@ void startServer(const ServerOptions& options) {
     if(options.serverType == "oto") {
         std::cout << "oto server" << std::endl;
         clientlen = sizeof(clientAddr);
-        otoServer(serverSockfd, clientAddr, clientlen, options);
+        ctcServer(serverSockfd, clientAddr, clientlen, options);
     }
     else if(options.serverType == "mor") {
         std::cout << "multi one room server" << std::endl;
