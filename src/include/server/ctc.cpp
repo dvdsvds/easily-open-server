@@ -4,7 +4,6 @@
 std::vector<int> clients;
 std::mutex clientMutex;
 
-
 ServerOptions options;
 
 void forwardMessage(const std::vector<int>& clients, const std::string& message, int senderSockfd) {
@@ -53,11 +52,10 @@ void handleRecv(int clientSockfd, std::vector<int>& clients, const ServerOptions
 }
 
 void ctcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t clientlen, const ServerOptions& options) {
-    std::cout << "servertype : " << options.serverType <<std::endl;
     char clientIP[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
     
-    std::cout << "Starting 1-to-1 server" << std::endl;
+    std::cout << "Starting Client-to-Client server" << std::endl;
 
     int clientCount = 0;
 
@@ -79,7 +77,7 @@ void ctcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t client
                 clientCount++;
             }
 
-            if(clients.size() == 2) {
+            if(clientCount == 2 && clients.size() == 2) {
                 std::cout << "2 clients connected." << std::endl;
 
                 std::thread c1(handleRecv, clients[0], std::ref(clients), std::ref(options));

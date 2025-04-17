@@ -1,14 +1,14 @@
 #include "options.h"
 
 void setServerOption(ServerOptions& options) {
-    std::cout << "Enter server type (default: oto) : ";
+    std::cout << "Enter server type (default: ctc) : ";
     std::string type;
     std::getline(std::cin, type);
     if(!type.empty()) {
         options.serverType = type;
     }
     else {
-        options.serverType = "oto";
+        options.serverType = "ctc";
     }
 
     // SET PORT
@@ -29,20 +29,26 @@ void setServerOption(ServerOptions& options) {
     }
 
     // SET MAX CLIENT
-    std::cout << "Enter Max Client (default : 2) : ";
-    std::string maxclientInput;
-    std::getline(std::cin, maxclientInput);
-    if(!maxclientInput.empty()) {
-        try {
-            options.maxClient = std::stoi(maxclientInput);
-        }
-        catch(const std::exception e) {
-            std::cerr << "Invalid value, using default 2." << std::endl;
-            options.maxClient = 2;
-        }
+    if(options.serverType == "ctc") {
+        std::cout << "ctfc server's maxClient option is fixed to 2" << std::endl;
+        options.maxClient = 2;
     }
     else {
-        options.maxClient = 2;
+        std::cout << "Enter Max Client (default : 2) : ";
+        std::string maxclientInput;
+        std::getline(std::cin, maxclientInput);
+        if(!maxclientInput.empty()) {
+            try {
+                options.maxClient = std::stoi(maxclientInput);
+            }
+            catch(const std::exception e) {
+                std::cerr << "Invalid value, using default 2." << std::endl;
+                options.maxClient = 2;
+            }
+        }
+        else {
+            options.maxClient = 2;
+        }
     }
 
     // SET BUFFER SIZE

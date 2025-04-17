@@ -1,5 +1,6 @@
 #include "start_server.h"
 #include "ctc.h"
+#include "srmc.h"
 #include <cstdlib>
 #include <iostream>
 #include <system_error>
@@ -36,13 +37,13 @@ void startServer(const ServerOptions& options) {
 
     socklen_t clientlen;
 
-    if(options.serverType == "oto") {
-        std::cout << "oto server" << std::endl;
+    if(options.serverType == "ctc") {
         clientlen = sizeof(clientAddr);
         ctcServer(serverSockfd, clientAddr, clientlen, options);
     }
-    else if(options.serverType == "mor") {
-        std::cout << "multi one room server" << std::endl;
+    else if(options.serverType == "srmc") {
+        clientlen = sizeof(clientAddr);
+        srmcServer(serverSockfd, clientAddr, clientlen, options);
     }
     else if(options.serverType == "mr") {
         std::cout << "multi room server" << std::endl;
