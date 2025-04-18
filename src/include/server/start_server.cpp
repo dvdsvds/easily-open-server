@@ -1,6 +1,7 @@
 #include "start_server.h"
 #include "ctc.h"
 #include "srmc.h"
+// #include "mrmc.h"
 #include <cstdlib>
 #include <iostream>
 #include <system_error>
@@ -45,8 +46,9 @@ void startServer(const ServerOptions& options) {
         clientlen = sizeof(clientAddr);
         srmcServer(serverSockfd, clientAddr, clientlen, options);
     }
-    else if(options.serverType == "mr") {
-        std::cout << "multi room server" << std::endl;
+    else if(options.serverType == "mrmc") {
+        clientlen = sizeof(clientAddr);
+        // mrmcServer(serverSockfd, clientAddr, clientlen, options);
     }
 
     std::cout << "Client connected" << std::endl;

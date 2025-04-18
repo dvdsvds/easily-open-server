@@ -2,6 +2,7 @@
 #define OTO_H
 
 #include "../utils/options.h"
+#include "handleMessage.h"
 #include <cstring>
 #include <iostream>
 #include <mutex>
@@ -14,9 +15,11 @@
 #include <netinet/in.h>
 #include <system_error>
 #include <arpa/inet.h>
+#include <thread>
+
 
 void ctcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t clientlen, const ServerOptions& options);
-void handleRecv(int clientSockfd, std::vector<int>& clients, const ServerOptions& options);
-void forwardMessage(const std::vector<int>& clients, const std::string& message, int senderSockfd);
+// void handleRecv(int clientSockfd, std::vector<int>& clients, const ServerOptions& options);
+// void forwardMessage(const std::vector<int>& clients, const std::string& message, int senderSockfd);
 
 #endif

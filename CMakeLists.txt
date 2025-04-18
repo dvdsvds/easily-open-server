@@ -11,7 +11,9 @@ set(SOURCES
     src/include/utils/ip_util.cpp
     src/include/utils/options.cpp
     src/include/server/start_server.cpp
-    src/include/server/oto.cpp
+    src/include/server/ctc.cpp
+    src/include/server/srmc.cpp
+    src/include/server/handleMessage.cpp
 )
 
 find_package(CURL REQUIRED)
