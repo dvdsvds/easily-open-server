@@ -1,9 +1,9 @@
 #include "handleMessage.h"
 
-std::vector<int> HandlerMessage::clients;
-std::mutex HandlerMessage::clientMutex;
+std::vector<int> HandleMessage::clients;
+std::mutex HandleMessage::clientMutex;
 
-void HandlerMessage::forwardMessage(const std::vector<int>& clients, const std::string& message, int senderSockfd) {
+void HandleMessage::forwardMessage(const std::vector<int>& clients, const std::string& message, int senderSockfd) {
     for (int clientSockfd : clients) {
         if (clientSockfd != senderSockfd) {
             send(clientSockfd, message.c_str(), message.size(), 0);
@@ -12,7 +12,7 @@ void HandlerMessage::forwardMessage(const std::vector<int>& clients, const std::
 }
 
 
-void HandlerMessage::handleRecv(int clientSockfd, std::vector<int>& clients, const ServerOptions& options) {
+void HandleMessage::handleRecv(int clientSockfd, std::vector<int>& clients, const ServerOptions& options) {
     char buffer[options.bufferSize];
     while(true) {
         memset(buffer, 0, sizeof(buffer));
@@ -22,7 +22,7 @@ void HandlerMessage::handleRecv(int clientSockfd, std::vector<int>& clients, con
             buffer[bytesRead] = '\0';
             std::cout << "CLIENT : " << buffer << std::endl;
 
-            std::lock_guard<std::mutex> lock(HandlerMessage::clientMutex);
+            std::lock_guard<std::mutex> lock(HandleMessage::clientMutex);
             forwardMessage(clients, buffer, clientSockfd);
         }
         else {

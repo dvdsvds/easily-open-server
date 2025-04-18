@@ -18,7 +18,7 @@
 
 
 
-class HandlerMessage {
+class HandleMessage {
 public:
     static std::vector<int> clients;
     static std::mutex clientMutex;

@@ -25,24 +25,24 @@ void ctcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t client
             std::cout << "Client IP : " << clientIP << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
             
             {
-                std::lock_guard<std::mutex> lock(HandlerMessage::clientMutex);
-                HandlerMessage::clients.push_back(clientSockfd);
+                std::lock_guard<std::mutex> lock(HandleMessage::clientMutex);
+                HandleMessage::clients.push_back(clientSockfd);
                 clientCount++;
             }
 
-            if(clientCount == 2 && HandlerMessage::clients.size() == 2) {
+            if(clientCount == 2 && HandleMessage::clients.size() == 2) {
                 std::cout << "2 clients connected." << std::endl;
 
-                std::thread c1(HandlerMessage::handleRecv, HandlerMessage::clients[0], std::ref(HandlerMessage::clients), std::ref(options));
-                std::thread c2(HandlerMessage::handleRecv, HandlerMessage::clients[1], std::ref(HandlerMessage::clients), std::ref(options));
+                std::thread c1(HandleMessage::handleRecv, HandleMessage::clients[0], std::ref(HandleMessage::clients), std::ref(options));
+                std::thread c2(HandleMessage::handleRecv, HandleMessage::clients[1], std::ref(HandleMessage::clients), std::ref(options));
                 c1.detach();
                 c2.detach();
             }
         }
 
         {
-            std::lock_guard<std::mutex> lock(HandlerMessage::clientMutex);
-            if(HandlerMessage::clients.size() == 0) {
+            std::lock_guard<std::mutex> lock(HandleMessage::clientMutex);
+            if(HandleMessage::clients.size() == 0) {
                 std::cout << "All clients disconnected. Shutting down server." << std::endl;
                 break;
             }
