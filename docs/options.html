@@ -57,10 +57,16 @@
     <h3>serverType</h3>
     <p>
       <strong>Type:</strong> String<br/>
-      Specifies the type of server to launch. Example values include and <code>ctc</code>, <code>srmc</code>, <code>mrmc</code>. The server behavior is determined by this value.
-      <strong>Default:</strong> <code>ctc</code><br/>
-      <strong>Default:</strong> <code>srmc</code><br/>
-      <strong>Default:</strong> <code>mrmc</code><br/>
+      Specifies the type of server to launch. Example values include and <code>ctc</code>, <code>srmc</code>, <code>mrmc</code>. The server behavior is determined by this value.<br>
+      <strong>Options</strong> 
+      - `<code>ctc</code>`: **Client-To-Client**
+      - This server type facilitates direct communication between clients. It enables peer-to-peer interactions, where each client connects directly with others without a central server mediation.
+
+      - `<code>srmc</code>`: **Single Room - Multi Client**
+      - This server type supports a single room where multiple clients can connect and interact. All clients in the same room are connected to a centralized server, which handles their communication.
+
+      - `<code>mrmc</code>`: **Multi Room - Multi Client**
+      - This server type allows multiple rooms, each with multiple clients. Clients can join different rooms, and each room operates independently, with its own set of clients connected to the server.
     </p>
   </div>
 
