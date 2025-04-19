@@ -13,7 +13,7 @@ set(SOURCES
     src/include/server/start_server.cpp
     src/include/server/ctc.cpp
     src/include/server/srmc.cpp
-    src/include/server/handleMessage.cpp
+    src/include/server/handler.cpp
 )
 
 find_package(CURL REQUIRED)

@@ -24,18 +24,18 @@ void srmcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t clien
             std::cout << "Client IP :" << clientIP << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
 
             { 
-                std::lock_guard<std::mutex> lock(HandleMessage::clientMutex);
-                HandleMessage::clients.push_back(clientSockfd);
+                std::lock_guard<std::mutex> lock(Handler::clientMutex);
+                Handler::clients.push_back(clientSockfd);
                 clientCount++;
             }
 
-            std::thread t(HandleMessage::handleRecv, clientSockfd, std::ref(HandleMessage::clients), std::ref(options));
+            std::thread t(Handler::handleRecv, clientSockfd, std::ref(Handler::clients), std::ref(options));
             t.detach();
         }
 
         {
-            std::lock_guard<std::mutex> lock(HandleMessage::clientMutex);
-            if(HandleMessage::clients.size() == 0) {
+            std::lock_guard<std::mutex> lock(Handler::clientMutex);
+            if(Handler::clients.size() == 0) {
                 std::cout << "All clients disconnected. Shutting down server." << std::endl;
                 break;
             }
