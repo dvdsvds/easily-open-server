@@ -2,6 +2,7 @@
 
 std::vector<int> Handler::clients;
 std::mutex Handler::clientMutex;
+std::unordered_map<int, std::string> Handler::clientNickName;
 
 void Handler::forwardMessage(const std::vector<int>& clients, const std::string& message, int senderSockfd) {
     for (int clientSockfd : clients) {
@@ -10,7 +11,6 @@ void Handler::forwardMessage(const std::vector<int>& clients, const std::string&
         }
     }
 }
-
 
 void Handler::handleRecv(int clientSockfd, std::vector<int>& clients, const ServerOptions& options) {
     char buffer[options.bufferSize];
@@ -46,4 +46,23 @@ void Handler::handleRecv(int clientSockfd, std::vector<int>& clients, const Serv
     std::lock_guard<std::mutex> lock(clientMutex);
     clients.erase(std::remove(clients.begin(), clients.end(), clientSockfd), clients.end());
     close(clientSockfd);
+}
+
+std::string Handler::nickPrompt(int clientSockfd) {
+    const std::string name = "Enter Your NickName : ";
+    send(clientSockfd, name.c_str(), name.size(), 0);
+
+    char buffer[64] = {0};
+    int n = recv(clientSockfd, buffer, sizeof(buffer), 0);
+    if(n <= 0) {
+        std::cerr << "Failed to receive nickname. Bisconnecting client." << std::endl;
+        close(clientSockfd);
+        return "";
+    }
+
+    std::string nickname(buffer, n);
+    nickname.erase(std::remove(nickname.begin(), nickname.end(), '\n'), nickname.end());
+    nickname.erase(std::remove(nickname.begin(), nickname.end(), '\r'), nickname.end());
+
+    return name;
 }

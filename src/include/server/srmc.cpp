@@ -1,5 +1,6 @@
 #include "srmc.h"
 #include "handler.h"
+#include <cstdlib>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -26,9 +27,17 @@ void srmcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t clien
             inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
             std::cout << "Client IP :" << clientIP << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
 
+            std::string nickname = Handler::nickPrompt(clientSockfd);
+            if(nickname.empty()) {
+                std::cerr << "Client did not provide nickname, skipping connection." << std::endl;
+                close(clientSockfd);
+                exit(EXIT_FAILURE);
+            }
+
             { 
                 std::lock_guard<std::mutex> lock(Handler::clientMutex);
                 Handler::clients.push_back(clientSockfd);
+                Handler::clientNickName[clientSockfd] = nickname;
                 clientCount++;
             }
 
@@ -46,4 +55,4 @@ void srmcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t clien
 
     }
 }
-
+;

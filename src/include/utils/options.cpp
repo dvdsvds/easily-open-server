@@ -129,7 +129,7 @@ void setServerOption(ServerOptions& options) {
         }
     }
     else {
-        std::cout << "ctc server's maxClient option is fixed to " << DEFAULT_FIXED_CLIENT << std::endl;
+        std::cout << "ctc server's maxClient option is fixed to " << DEFAULT_MAX_CLIENT << std::endl;
         options.maxClient = DEFAULT_FIXED_CLIENT;
     }
 

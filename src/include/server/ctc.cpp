@@ -8,9 +8,6 @@ void ctcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t client
     inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
     
     std::cout << "Starting Client-to-Client server" << std::endl;
-    std::cout << options.serverType << std::endl;
-    std::cout << options.maxClient << std::endl;
-    std::cout << options.bufferSize << std::endl;
 
     int clientCount = 0;
 
