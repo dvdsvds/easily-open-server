@@ -10,6 +10,7 @@
 struct ServerOptions {
     std::string serverType;
     int port;
+    int maxRoom;
     int maxClient;
     int bufferSize;
     int maxReqSize;
@@ -21,6 +22,4 @@ extern ServerOptions options;
 
 void setServerOption(ServerOptions& options);
 
-// void parseOptions(int argc, char* argv[], std::map<std::string, std::string>& options);
-// void printOptions(const std::map<std::string, std::string>& options);
 #endif

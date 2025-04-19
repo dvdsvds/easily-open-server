@@ -1,16 +1,17 @@
-#include "ctc.h"
+#include "mrmc.h"
 #include "handler.h"
 #include <arpa/inet.h>
-#include <thread>
+#include <cstdlib>
+#include <mutex>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <system_error>
 
-void ctcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t clientlen, const ServerOptions& options) {
+void mrmcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t clientlen, const ServerOptions& options) {
     char clientIP[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
-    
-    std::cout << "Starting Client-to-Client server" << std::endl;
-    std::cout << options.serverType << std::endl;
-    std::cout << options.maxClient << std::endl;
-    std::cout << options.bufferSize << std::endl;
+
+    std::cout << "Starting Multi Room - Multi Client" << std::endl;
 
     int clientCount = 0;
 
@@ -25,21 +26,15 @@ void ctcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t client
 
             inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
             std::cout << "Client IP : " << clientIP << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
-            
+
             {
                 std::lock_guard<std::mutex> lock(Handler::clientMutex);
                 Handler::clients.push_back(clientSockfd);
                 clientCount++;
             }
 
-            if(clientCount == 2 && Handler::clients.size() == 2) {
-                std::cout << "2 clients connected." << std::endl;
-
-                std::thread c1(Handler::handleRecv, Handler::clients[0], std::ref(Handler::clients), std::ref(options));
-                std::thread c2(Handler::handleRecv, Handler::clients[1], std::ref(Handler::clients), std::ref(options));
-                c1.detach();
-                c2.detach();
-            }
+            std::thread t(Handler::handleRecv, clientSockfd, std::ref(Handler::clients), std::ref(options));
+            t.detach();
         }
 
         {
@@ -49,8 +44,5 @@ void ctcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t client
                 break;
             }
         }
-
     }
-
-    close(serverSockfd);
 }
