@@ -1,18 +1,17 @@
 #include "handler.h"
 
-std::vector<int> Handler::clients;
+std::vector<ClientInfo> Handler::clients;
 std::mutex Handler::clientMutex;
-std::unordered_map<int, std::string> Handler::clientNickName;
 
-void Handler::forwardMessage(const std::vector<int>& clients, const std::string& message, int senderSockfd) {
-    for (int clientSockfd : clients) {
-        if (clientSockfd != senderSockfd) {
-            send(clientSockfd, message.c_str(), message.size(), 0);
+void Handler::forwardMessage(const std::vector<ClientInfo>& clients, const std::string& message, int senderSockfd) {
+    for (const ClientInfo& client : clients) {
+        if (client.sockfd != senderSockfd) {
+            send(client.sockfd, message.c_str(), message.size(), 0);
         }
     }
 }
 
-void Handler::handleRecv(int clientSockfd, std::vector<int>& clients, const ServerOptions& options) {
+void Handler::handleRecv(int clientSockfd, std::vector<ClientInfo>& clients, const ServerOptions& options) {
     char buffer[options.bufferSize];
     while(true) {
         memset(buffer, 0, sizeof(buffer));
@@ -20,7 +19,15 @@ void Handler::handleRecv(int clientSockfd, std::vector<int>& clients, const Serv
 
         if(bytesRead > 0) {
             buffer[bytesRead] = '\0';
-            std::cout << "CLIENT : " << buffer << std::endl;
+
+            std::string nickname;
+            for(const ClientInfo& client : clients) {
+                if(client.sockfd == clientSockfd) {
+                    nickname = client.nickname;
+                    break;
+                }
+            }
+            std::cout << nickname <<  " : " << buffer << std::endl;
 
             std::lock_guard<std::mutex> lock(Handler::clientMutex);
             forwardMessage(clients, buffer, clientSockfd);
@@ -44,25 +51,53 @@ void Handler::handleRecv(int clientSockfd, std::vector<int>& clients, const Serv
 
     }
     std::lock_guard<std::mutex> lock(clientMutex);
-    clients.erase(std::remove(clients.begin(), clients.end(), clientSockfd), clients.end());
+    clients.erase(std::remove_if(clients.begin(), clients.end(), 
+                                 [clientSockfd](const ClientInfo& client) {
+                                     return client.sockfd == clientSockfd;
+                                 }), clients.end());
     close(clientSockfd);
 }
 
-std::string Handler::nickPrompt(int clientSockfd) {
-    const std::string name = "Enter Your NickName : ";
-    send(clientSockfd, name.c_str(), name.size(), 0);
+// void Handler::nickPrompt(int sockfd) {
+//     char buffer[128] = {0};
+//     int n = recv(sockfd, buffer, sizeof(buffer), 0);
+//     if(n > 0) {
+//         std::cout << std::string(buffer, n);
+//     }
+//
+//     std::string nickname;
+//     std::getline(std::cin, nickname);
+//     send(sockfd, nickname.c_str(), nickname.size(), 0);
+// }
 
-    char buffer[64] = {0};
-    int n = recv(clientSockfd, buffer, sizeof(buffer), 0);
-    if(n <= 0) {
-        std::cerr << "Failed to receive nickname. Bisconnecting client." << std::endl;
-        close(clientSockfd);
-        return "";
+// std::string Handler::nickPrompt(int clientSockfd) {
+//     std::string promptMsg = "Enter your nickname: ";
+//     send(clientSockfd, promptMsg.c_str(), promptMsg.size(), 0);
+//
+//     char buffer[64] = {0};
+//     int n = recv(clientSockfd, buffer, sizeof(buffer), 0);
+//     if (n <= 0) {
+//         std::cerr << "Failed to receive nickname. Disconnecting client." << std::endl;
+//         close(clientSockfd);
+//         return "";
+//     }
+//
+//     std::string nickname(buffer, n);
+//     return nickname;  // 이제 std::string을 반환합니다
+// }
+
+
+std::string Handler::nickPrompt(int sockfd) {
+    char buffer[128] = {0};  
+
+    int n = recv(sockfd, buffer, sizeof(buffer), 0);
+    if (n > 0) {
+        std::string nickname(buffer, n);  
+        std::cout << "Received nickname: " << nickname << std::endl;
+        return nickname;  
+    } else {
+        std::cerr << "Error receiving nickname from client." << std::endl;
+        return "";  
     }
-
-    std::string nickname(buffer, n);
-    nickname.erase(std::remove(nickname.begin(), nickname.end(), '\n'), nickname.end());
-    nickname.erase(std::remove(nickname.begin(), nickname.end(), '\r'), nickname.end());
-
-    return name;
 }
+

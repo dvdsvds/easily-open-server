@@ -18,7 +18,19 @@ struct ServerOptions {
     int timeout;
 };
 
+struct ClientInfo {
+    int sockfd;
+    std::string ip;
+    int port;
+    std::string nickname;
+
+    bool operator==(int sockfd) const {
+        return this->sockfd == sockfd;
+    }
+};
+
 extern ServerOptions options;
+extern ClientInfo info;
 
 void setServerOption(ServerOptions& options);
 
