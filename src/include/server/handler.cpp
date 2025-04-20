@@ -58,46 +58,22 @@ void Handler::handleRecv(int clientSockfd, std::vector<ClientInfo>& clients, con
     close(clientSockfd);
 }
 
-// void Handler::nickPrompt(int sockfd) {
-//     char buffer[128] = {0};
-//     int n = recv(sockfd, buffer, sizeof(buffer), 0);
-//     if(n > 0) {
-//         std::cout << std::string(buffer, n);
-//     }
-//
-//     std::string nickname;
-//     std::getline(std::cin, nickname);
-//     send(sockfd, nickname.c_str(), nickname.size(), 0);
-// }
 
-// std::string Handler::nickPrompt(int clientSockfd) {
-//     std::string promptMsg = "Enter your nickname: ";
-//     send(clientSockfd, promptMsg.c_str(), promptMsg.size(), 0);
-//
-//     char buffer[64] = {0};
-//     int n = recv(clientSockfd, buffer, sizeof(buffer), 0);
-//     if (n <= 0) {
-//         std::cerr << "Failed to receive nickname. Disconnecting client." << std::endl;
-//         close(clientSockfd);
-//         return "";
-//     }
-//
-//     std::string nickname(buffer, n);
-//     return nickname;  // 이제 std::string을 반환합니다
-// }
+std::string Handler::nickPrompt(int clientSockfd) {
+    std::string promptMsg = "Enter your nickname: ";
+    send(clientSockfd, promptMsg.c_str(), promptMsg.size(), 0);
 
-
-std::string Handler::nickPrompt(int sockfd) {
-    char buffer[128] = {0};  
-
-    int n = recv(sockfd, buffer, sizeof(buffer), 0);
-    if (n > 0) {
-        std::string nickname(buffer, n);  
-        std::cout << "Received nickname: " << nickname << std::endl;
-        return nickname;  
-    } else {
-        std::cerr << "Error receiving nickname from client." << std::endl;
-        return "";  
+    char buffer[64] = {0};
+    int n = recv(clientSockfd, buffer, sizeof(buffer), 0);
+    if (n <= 0) {
+        std::cerr << "Failed to receive nickname. Disconnecting client." << std::endl;
+        close(clientSockfd);
+        return "";
     }
+
+    std::string nickname(buffer, n);
+    return nickname;  
 }
+
+
 
