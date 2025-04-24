@@ -4,9 +4,19 @@ std::vector<ClientInfo> Handler::clients;
 std::mutex Handler::clientMutex;
 
 void Handler::forwardMessage(const std::vector<ClientInfo>& clients, const std::string& message, int senderSockfd) {
+    std::string senderNickname = "Unknown";
+    for (const ClientInfo& client : clients) {
+        if(client.sockfd == senderSockfd) {
+            senderNickname = client.nickname;
+            break;
+        }
+    }
+
+    std::string fullMessage = senderNickname + " : " + message;
+
     for (const ClientInfo& client : clients) {
         if (client.sockfd != senderSockfd) {
-            send(client.sockfd, message.c_str(), message.size(), 0);
+            send(client.sockfd, fullMessage.c_str(), fullMessage.size(), 0);
         }
     }
 }
@@ -27,7 +37,7 @@ void Handler::handleRecv(int clientSockfd, std::vector<ClientInfo>& clients, con
                     break;
                 }
             }
-            std::cout << nickname <<  " : " << buffer << std::endl;
+            // std::cout << nickname <<  " : " << buffer << std::endl;
 
             std::lock_guard<std::mutex> lock(Handler::clientMutex);
             forwardMessage(clients, buffer, clientSockfd);
@@ -72,6 +82,8 @@ std::string Handler::nickPrompt(int clientSockfd) {
     }
 
     std::string nickname(buffer, n);
+
+    nickname.erase(nickname.find_last_not_of("\n\r") + 1);
     return nickname;  
 }
 

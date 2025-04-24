@@ -80,6 +80,13 @@ int main(int argc, char* argv[]) {
     std::cout << "Connected to " << server_ip << ":" << server_port << std::endl;
 
     // === 닉네임 입력 ===
+    char pbuffer[BUFFER_SIZE] = {0};
+    ssize_t n = recv(sockfd, pbuffer, sizeof(pbuffer) - 1, 0);
+
+    if (n > 0) {
+        std::string prompt(pbuffer, n); // string으로 변환
+        std::cout << prompt;                 // 출력
+    }
     std::string nickname;
     std::getline(std::cin, nickname);
 
@@ -90,6 +97,7 @@ int main(int argc, char* argv[]) {
     }
 
     // 서버에 닉네임 전송
+    nickname += "\n";
     send(sockfd, nickname.c_str(), nickname.length(), 0);
 
     std::thread recvThread(handleRecv, sockfd);
@@ -115,5 +123,5 @@ int main(int argc, char* argv[]) {
     running = false;
     close(sockfd);
     return 0;
-}
+};
 

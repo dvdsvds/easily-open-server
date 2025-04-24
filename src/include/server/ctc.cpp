@@ -3,7 +3,6 @@
 #include <arpa/inet.h>
 #include <thread>
 
-ClientInfo info;
 
 void ctcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t clientlen, const ServerOptions& options) {
     char clientIP[INET_ADDRSTRLEN];
@@ -24,6 +23,12 @@ void ctcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t client
             inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
             int clientPort = ntohs(clientAddr.sin_port);
             std::string nickname = Handler::nickPrompt(clientSockfd);
+            if(nickname.empty()) {
+                std::cerr << "Failed to get nickname, closing connection" << std::endl;
+                close(clientSockfd);
+                exit(clientSockfd);
+                continue;
+            }
 
             info.sockfd = clientSockfd;
             info.port = clientPort;

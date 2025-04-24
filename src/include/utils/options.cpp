@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <set>
 
+ClientInfo info;
+
 const std::string DEFAULT_SERVER_TYPE = "ctc";
 const std::set<std::string> TYPES = {"ctc", "srmc", "mrmc"};
 
