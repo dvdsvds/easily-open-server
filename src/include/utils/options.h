@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <ios>
 #include <limits>
+#include <atomic>
 
 struct ServerOptions {
     std::string serverType;
@@ -28,7 +29,7 @@ struct ClientInfo {
         return this->sockfd == sockfd;
     }
 };
-
+extern std::atomic<bool> hasClientConnected;
 extern ServerOptions options;
 extern ClientInfo info;
 

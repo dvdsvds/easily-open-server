@@ -3,6 +3,7 @@
 #include <set>
 
 ClientInfo info;
+std::atomic<bool> hasClientConnected;
 
 const std::string DEFAULT_SERVER_TYPE = "ctc";
 const std::set<std::string> TYPES = {"ctc", "srmc", "mrmc"};

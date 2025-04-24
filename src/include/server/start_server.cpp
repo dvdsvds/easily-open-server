@@ -1,6 +1,6 @@
 #include "start_server.h"
 #include "ctc.h"
-// #include "srmc.h"
+#include "srmc.h"
 // #include "mrmc.h"
 #include <cstdlib>
 #include <iostream>
@@ -44,7 +44,7 @@ void startServer(const ServerOptions& options) {
     }
     else if(options.serverType == "srmc") {
         clientlen = sizeof(clientAddr);
-        // srmcServer(serverSockfd, clientAddr, clientlen, options);
+        srmcServer(serverSockfd, clientAddr, clientlen, options);
     }
     else if(options.serverType == "mrmc") {
         clientlen = sizeof(clientAddr);

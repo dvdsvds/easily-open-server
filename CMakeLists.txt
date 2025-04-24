@@ -12,7 +12,7 @@ set(SOURCES
     src/include/utils/options.cpp
     src/include/server/start_server.cpp
     src/include/server/ctc.cpp
-    # src/include/server/srmc.cpp
+    src/include/server/srmc.cpp
     src/include/server/handler.cpp
 )
 

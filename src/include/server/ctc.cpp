@@ -2,64 +2,70 @@
 #include "handler.h"
 #include <arpa/inet.h>
 #include <thread>
+#include "ctc.h"
+#include "handler.h"
+#include <cstdlib>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 
 void ctcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t clientlen, const ServerOptions& options) {
     char clientIP[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
-    
+
     std::cout << "Starting Client-to-Client server" << std::endl;
 
-    while(true) {
-        if(Handler::clients.size() <= options.maxClient) {
-            int clientSockfd = accept(serverSockfd, (struct sockaddr*)&clientAddr, &clientlen);
-            if(clientSockfd == -1) {
-                std::cerr << "Accept failed : " << std::system_error(errno, std::generic_category()).what() << std::endl;
-                close(serverSockfd);
-                exit(EXIT_FAILURE);
+    std::thread([]() {
+        while (true) {
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+            std::lock_guard<std::mutex> lock(Handler::clientMutex);
+            if (hasClientConnected && Handler::clients.empty()) {
+                std::cout << "All clients disconnected. Shutting down server." << std::endl;
+                std::exit(0);
             }
-            std::cout << "Accepted connection from: " << clientIP << ":" << ntohs(clientAddr.sin_port) << std::endl;
+        }
+    }).detach();
 
-            inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
-            int clientPort = ntohs(clientAddr.sin_port);
-            std::string nickname = Handler::nickPrompt(clientSockfd);
-            if(nickname.empty()) {
-                std::cerr << "Failed to get nickname, closing connection" << std::endl;
-                close(clientSockfd);
-                exit(clientSockfd);
+    while (true) {
+        if (Handler::clients.size() < options.maxClient) {
+            int clientSockfd = accept(serverSockfd, (struct sockaddr*)&clientAddr, &clientlen);
+            if (clientSockfd == -1) {
+                std::cerr << "Accept failed: " << std::system_error(errno, std::generic_category()).what() << std::endl;
                 continue;
             }
 
-            info.sockfd = clientSockfd;
-            info.port = clientPort;
-            info.nickname = nickname;
+            inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
+            int clientPort = ntohs(clientAddr.sin_port);
 
-            std::cout << "Client IP : " << clientIP << ", port : " << info.port << std::endl;
-            
-            {
-                std::lock_guard<std::mutex> lock(Handler::clientMutex);
-                Handler::clients.push_back(info);
-            }
+            std::thread([clientSockfd, clientAddr, clientPort, options]() {
+                std::string nickname = Handler::nickPrompt(clientSockfd);
+                if (nickname.empty()) {
+                    std::cerr << "Client did not provide nickname, skipping connection." << std::endl;
+                    close(clientSockfd);
+                    return;
+                }
 
-            if(Handler::clients.size() == 2) {
-                std::cout <<  "2 clients connected." << std::endl;
+                info.sockfd = clientSockfd;
+                info.port = clientPort;
+                info.nickname = nickname;
 
-                std::thread c1(Handler::handleRecv, Handler::clients[0].sockfd, std::ref(Handler::clients), std::ref(options));
-                std::thread c2(Handler::handleRecv, Handler::clients[1].sockfd, std::ref(Handler::clients), std::ref(options));
-                c1.detach();
-                c2.detach();
-            }
+                std::cout << "Client IP: " << inet_ntoa(clientAddr.sin_addr) << ", port: " << clientPort << std::endl;
+
+                {
+                    std::lock_guard<std::mutex> lock(Handler::clientMutex);
+                    Handler::clients.push_back(info);
+                    hasClientConnected = true;
+                }
+
+                if (Handler::clients.size() == 2) {
+                    for (size_t i = 0; i < Handler::clients.size(); ++i) {
+                        std::thread t(Handler::handleRecv, Handler::clients[i].sockfd, std::ref(Handler::clients), std::ref(options));
+                        t.detach();
+                    }
+                    std::cout << "2 clients connected. Starting communication." << std::endl;
+                }
+            }).detach();
         }
-
-        {
-            std::lock_guard<std::mutex> lock(Handler::clientMutex);
-            if(Handler::clients.size() == 0) {
-                std::cout << "All clients disconnected. Shutting down server." << std::endl;
-                break;
-            }
-        }
-
     }
-
-    close(serverSockfd);
 }
+
