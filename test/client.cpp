@@ -4,33 +4,47 @@
 #include <cstring>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <sys/socket.h>
+#include <csignal>
 
 #define BUFFER_SIZE 1024
 
+int sockfd = -1;
+bool running = true;
+
 void handleRecv(int sockfd) {
     char buffer[BUFFER_SIZE];
-    while (true) {
+    while (running) {
         memset(buffer, 0, sizeof(buffer));
         ssize_t bytesRead = recv(sockfd, buffer, sizeof(buffer) - 1, 0);
 
         if (bytesRead > 0) {
             buffer[bytesRead] = '\0';  // null-terminate the message
-            std::cout << "\rOther Client: " << buffer << std::endl;
+            std::cout << "\r" << buffer << std::endl;
             std::cout << "> " << std::flush;
         }
         else if (bytesRead == 0) {
-            std::cout << "Server disconnected." << std::endl;
+            std::cout << "\n[Disconnected by server]" << std::endl;
+            running = false;
             break;
         }
         else {
-            std::cerr << "Error in receiving data." << std::endl;
+            std::cerr << "\n[Error receiving data]" << std::endl;
+            running = false;
             break;
         }
     }
 }
 
+void handleSigint(int) {
+    std::cout << "\n[Interrupt received, shutting down...]" << std::endl;
+    running = false;
+    if (sockfd != -1) close(sockfd);
+    exit(0);
+}
+
 int main(int argc, char* argv[]) {
+    signal(SIGINT, handleSigint);
+
     if (argc != 3) {
         std::cerr << "Usage: " << argv[0] << " [IP] [Port]" << std::endl;
         return 1;
@@ -39,41 +53,58 @@ int main(int argc, char* argv[]) {
     const char* server_ip = argv[1];
     int server_port = std::stoi(argv[2]);
 
-    // Create socket
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    // Connect to server
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
         std::cerr << "Socket creation failed!" << std::endl;
         return 1;
     }
 
-    // Server address structure
     struct sockaddr_in serverAddr;
     memset(&serverAddr, 0, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(server_port);
 
-    // Convert IP address
     if (inet_pton(AF_INET, server_ip, &serverAddr.sin_addr) <= 0) {
-        std::cerr << "Invalid address or address not supported" << std::endl;
+        std::cerr << "Invalid address or not supported." << std::endl;
         close(sockfd);
         return 1;
     }
 
-    // Connect to the server
     if (connect(sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
         std::cerr << "Connection failed!" << std::endl;
         close(sockfd);
         return 1;
     }
 
-    std::cout << "Connected to server: " << server_ip << ":" << server_port << std::endl;
+    std::cout << "Connected to " << server_ip << ":" << server_port << std::endl;
 
-    // Start a thread for receiving messages from the server
+    // === 닉네임 입력 ===
+    char pbuffer[BUFFER_SIZE] = {0};
+    ssize_t n = recv(sockfd, pbuffer, sizeof(pbuffer) - 1, 0);
+
+    if (n > 0) {
+        std::string prompt(pbuffer, n); // string으로 변환
+        std::cout << prompt;                 // 출력
+    }
+    std::string nickname;
+    std::getline(std::cin, nickname);
+
+    if (nickname.empty()) {
+        std::cerr << "Nickname cannot be empty!" << std::endl;
+        close(sockfd);
+        return 1;
+    }
+
+    // 서버에 닉네임 전송
+    nickname += "\n";
+    send(sockfd, nickname.c_str(), nickname.length(), 0);
+
     std::thread recvThread(handleRecv, sockfd);
     recvThread.detach();
 
     char buffer[BUFFER_SIZE];
-    while (true) {
+    while (running) {
         std::cout << "> ";
         std::cin.getline(buffer, sizeof(buffer));
 
@@ -82,15 +113,15 @@ int main(int argc, char* argv[]) {
             break;
         }
 
-        // Send the message to the server
         ssize_t bytesSent = send(sockfd, buffer, strlen(buffer), 0);
         if (bytesSent == -1) {
-            std::cerr << "Error in sending data." << std::endl;
+            std::cerr << "Error sending data." << std::endl;
             break;
         }
     }
 
+    running = false;
     close(sockfd);
     return 0;
-}
+};
 
