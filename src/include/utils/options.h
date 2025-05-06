@@ -1,6 +1,7 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
+#include <list>
 #include <map>
 #include <iostream>
 #include <cstdlib>
@@ -29,9 +30,18 @@ struct ClientInfo {
         return this->sockfd == sockfd;
     }
 };
+
+struct RoomInfo {
+    int roomId;
+    std::string roomName;
+    std::list<ClientInfo*> users;
+};
+
 extern std::atomic<bool> hasClientConnected;
 extern ServerOptions options;
 extern ClientInfo info;
+extern RoomInfo rinfo;
+
 
 void setServerOption(ServerOptions& options);
 

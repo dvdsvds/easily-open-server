@@ -3,6 +3,7 @@
 #include <set>
 
 ClientInfo info;
+RoomInfo rinfo;
 std::atomic<bool> hasClientConnected;
 
 const std::string DEFAULT_SERVER_TYPE = "ctc";
