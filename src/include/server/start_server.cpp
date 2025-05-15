@@ -46,10 +46,10 @@ void startServer(const ServerOptions& options) {
         clientlen = sizeof(clientAddr);
         srmcServer(serverSockfd, clientAddr, clientlen, options);
     }
-    else if(options.serverType == "mrmc") {
-        clientlen = sizeof(clientAddr);
-        // mrmcServer(serverSockfd, clientAddr, clientlen, options);
-    }
+    // else if(options.serverType == "mrmc") {
+    //     clientlen = sizeof(clientAddr);
+    //     mrmcServer(serverSockfd, clientAddr, clientlen, options);
+    // }
 
     std::cout << "Client connected" << std::endl;
 
