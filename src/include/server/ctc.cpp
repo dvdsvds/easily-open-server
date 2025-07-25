@@ -1,5 +1,5 @@
-#include "ctc.hpp"
-#include "handler.hpp"
+#include "ctc.h"
+#include "handler.h"
 #include <arpa/inet.h>
 #include <thread>
 #include <cstdlib>
