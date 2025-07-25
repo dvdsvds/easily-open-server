@@ -1,12 +1,9 @@
-#include "ctc.h"
-#include "handler.h"
+#include "ctc.hpp"
+#include "handler.hpp"
 #include <arpa/inet.h>
 #include <thread>
-#include "ctc.h"
-#include "handler.h"
 #include <cstdlib>
 #include <netinet/in.h>
-#include <arpa/inet.h>
 
 
 void ctcServer(int serverSockfd, struct sockaddr_in clientAddr, socklen_t clientlen, const ServerOptions& options) {
